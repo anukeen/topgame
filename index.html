@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOP GAME Astana | Next Level Cyber Club</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- CSS ПЕРЕМЕННЫЕ И БАЗА --- */
+        :root {
+            --primary-color: #00ffd5; /* Киберпанк бирюзовый */
+            --secondary-color: #bd00ff; /* Неоновый фиолетовый */
+            --bg-dark: #050505;
+            --glass-bg: rgba(20, 20, 20, 0.7);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --text-color: #ffffff;
+            --section-spacing: 120px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* --- ПРЕЛОАДЕР (ЗАГРУЗОЧНЫЙ ЭКРАН) --- */
+        .preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        .loader-cyber {
+            width: 80px; height: 80px;
+            border: 5px solid transparent;
+            border-top-color: var(--primary-color);
+            border-bottom-color: var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+        
+        .preloader.hidden {
+             opacity: 0;
+             visibility: hidden;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- ОБЩИЕ СТИЛИ И АНИМАЦИИ СКРОЛЛА --- */
+        h1, h2, h3 { text-transform: uppercase; letter-spacing: 2px; }
+        h2 {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        h2::after {
+            content: ''; position: absolute; bottom: -10px; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), var(--secondary-color), transparent);
+        }
+
+        /* Класс для элементов, которые должны появляться при скролле */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- НАВИГАЦИЯ (GLASSMORPHISM) --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            position: fixed;
+            width: 90%;
+            top: 0; z-index: 100;
+            background: rgba(5, 5, 5, 0.6);
+            backdrop-filter: blur(15px); /* Эффект матового стекла */
+            border-bottom: var(--glass-border);
+        }
+
+        .logo {
+            font-size: 1.8rem; font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo i { margin-right: 10px; color: var(--primary-color); -webkit-text-fill-color: initial; }
+
+        .nav-menu a {
+            color: var(--text-color); text-decoration: none;
+            margin-left: 30px; font-weight: 600; font-size: 1.1rem;
+            transition: 0.3s; display: inline-flex; align-items: center;
+        }
+        .nav-menu a i { margin-right: 8px; font-size: 0.9rem; color: var(--secondary-color); transition: 0.3s; }
+        .nav-menu a:hover { color: var(--primary-color); }
+        .nav-menu a:hover i { color: var(--primary-color); transform: scale(1.2); }
+
+        /* --- ГЛАВНЫЙ ЭКРАН (HERO) С ФОНОМ И ЧАСТИЦАМИ --- */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            /* ФОНОВАЯ КАРТИНКА - Замените ссылку на свою, если нужно */
+            background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+        }
+
+        /* Затемнение фона */
+        .hero::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 5, 0.85); z-index: 1;
+        }
+
+        /* Холст для JS частиц */
+        #particles-js {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 2;
+        }
+
+        .hero-content {
+            position: relative; z-index: 3;
+            /* Начальное состояние для анимации */
+            opacity: 0; transform: scale(0.9);
+            animation: heroAppear 1s ease-out 0.5s forwards;
+        }
+
+        @keyframes heroAppear { to { opacity: 1; transform: scale(1); } }
+
+        .hero h1 {
+            font-size: 5rem; line-height: 1; margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0, 255, 213, 0.3);
+        }
+        .hero h1 span { color: var(--primary-color); }
+        .hero p { font-size: 1.5rem; margin-bottom: 40px; color: #ccc; }
+        .hero p i { color: var(--secondary-color); margin: 0 10px; }
+
+        /* КИБЕР-КНОПКА */
+        .cyber-btn {
+            padding: 20px 50px;
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            font-size: 1.2rem; font-weight: 700; text-transform: uppercase;
+            cursor: pointer; position: relative; overflow: hidden;
+            transition: 0.3s; text-decoration: none; display: inline-block;
+        }
+        .cyber-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 213, 0.4), transparent);
+            transition: 0.5s;
+        }
+        .cyber-btn:hover {
+            background: var(--primary-color); color: #000;
+            box-shadow: 0 0 30px var(--primary-color);
+        }
+        .cyber-btn:hover::before { left: 100%; }
+        .cyber-btn i { margin-left: 10px; }
+
+        /* --- СЕКЦИИ --- */
+        section { padding: var(--section-spacing) 10%; position: relative; }
+
+        /* --- ЖЕЛЕЗО (3D CARDS) --- */
+        .specs-container {
+            display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;
+            perspective: 1000px; /* Для 3D эффекта */
+        }
+
+        .spec-card {
+            background: var(--glass-bg);
+            border: var(--glass-border);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            width: 300px;
+            text-align: center;
+            transition: transform 0.5s, box-shadow 0.5s;
+            /* Эффект 3D при наведении - CSS only */
+            transform-style: preserve-3d;
+        }
+
+        .spec-card:hover {
+            transform: translateY(-15px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 15px 30px rgba(0, 255, 213, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .card-icon {
+            font-size: 4rem; margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: pulseIcon 3s infinite ease-in-out;
+        }
+        @keyframes pulseIcon { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); filter: brightness(1.2); } }
+
+        .spec-card h3 { color: var(--primary-color); margin-bottom: 30px; font-size: 1.8rem; }
+        
+        .spec-list li {
+            display: flex; justify-content: space-between;
+            padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left; font-size: 1.1rem;
+        }
+        .spec-list li i { color: var(--secondary-color); margin-right: 10px; width: 25px; }
+        .spec-list li span { font-weight: 700; color: var(--primary-color); }
+
+        /* --- КАЛЬКУЛЯТОР (NEON UI) --- */
+        .calc-wrapper {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--secondary-color);
+            padding: 50px;
+            border-radius: 30px;
+            max-width: 700px; margin: 0 auto;
+            box-shadow: 0 0 50px rgba(189, 0, 255, 0.2);
+        }
+
+        .input-group { margin-bottom: 30px; position: relative; }
+        .input-group label {
+            display: block; margin-bottom: 12px; font-size: 1.2rem; color: var(--primary-color);
+        }
+        .input-group label i { margin-right: 10px; }
+
+        .neon-input {
+            width: 100%; padding: 15px 20px 15px 50px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid #333;
+            border-radius: 10px; color: #fff; font-size: 1.2rem; font-family: 'Rajdhani';
+            transition: 0.3s; outline: none;
+            box-sizing: border-box; /* Важно! */
+        }
+        .input-icon {
+            position: absolute; top: 53px; left: 20px; color: #777; transition: 0.3s;
+        }
+        .neon-input:focus { border-color: var(--secondary-color); box-shadow: 0 0 15px rgba(189, 0, 255, 0.5); }
+        .neon-input:focus + .input-icon { color: var(--secondary-color); }
+
+        .total-price-box {
+            text-align: center; margin-top: 40px;
+            padding: 30px; background: rgba(0, 255, 213, 0.1);
+            border-radius: 20px; border: 1px solid var(--primary-color);
+        }
+        #totalPrice {
+            display: block; font-size: 4rem; font-weight: 700;
+            color: var(--primary-color); text-shadow: 0 0 20px var(--primary-color);
+            transition: 0.3s;
+        }
+        #totalPrice.bump { animation: bumpPrice 0.3s ease-out; }
+        @keyframes bumpPrice { 50% { transform: scale(1.1); } }
+
+        /* --- КОНТАКТЫ И ПОДВАЛ --- */
+        .footer {
+            background: #020202; padding: 80px 10% 30px; text-align: center; border-top: 1px solid #222;
+        }
+        .contact-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 60px;
+        }
+        .contact-card i {
+            font-size: 3rem; color: var(--secondary-color); margin-bottom: 20px;
+        }
+        .contact-card h4 { color: var(--primary-color); margin-bottom: 15px; }
+        .social-links a {
+            display: inline-block; width: 50px; height: 50px; line-height: 50px;
+            background: #1a1a1a; border-radius: 50%; margin: 0 10px;
+            color: var(--primary-color); font-size: 1.5rem; transition: 0.3s;
+        }
+        .social-links a:hover {
+            background: var(--primary-color); color: #000; transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0, 255, 213, 0.4);
+        }
+
+        /* АДАПТИВ */
+        @media (max-width: 768px) {
+            h2 { font-size: 2rem; }
+            .hero h1 { font-size: 3rem; }
+            .navbar { padding: 15px; flex-direction: column; }
+            .nav-menu { margin-top: 20px; }
+            .nav-menu a { margin: 0 10px; font-size: 0.9rem; }
+            .spec-card { width: 100%; }
+            .calc-wrapper { padding: 30px 20px; }
+            #totalPrice { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="preloader">
+        <div class="loader-cyber"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-gamepad"></i> TOP GAME
+        </div>
+        <div class="nav-menu">
+            <a href="#hero"><i class="fa-solid fa-house-signal"></i> Главная</a>
+            <a href="#specs"><i class="fa-solid fa-microchip"></i> Железо</a>
+            <a href="#calc"><i class="fa-solid fa-calculator"></i> Тарифы</a>
+            <a href="#contacts"><i class="fa-solid fa-location-dot"></i> Контакты</a>
+        </div>
+    </nav>
+
+    <header id="hero" class="hero">
+        <canvas id="particles-js"></canvas>
+        
+        <div class="hero-content">
+            <h1>ДОБРО ПОЖАЛОВАТЬ В <br><span>TOP GAME ASTANA</span></h1>
+            <p><i class="fa-solid fa-display"></i> 540Hz Мониторы <i class="fa-solid fa-bolt"></i> RTX 4070 Ti <i class="fa-solid fa-clock"></i> 24/7</p>
+            <a href="#calc" class="cyber-btn">Занять игровой трон <i class="fa-solid fa-arrow-right-long"></i></a>
+        </div>
+    </header>
+
+    <section id="specs">
+        <h2 class="fade-in-section"><i class="fa-solid fa-server"></i> Боевой Арсенал</h2>
+        <div class="specs-container">
+            
+            <div class="spec-card fade-in-section" style="transition-delay: 0.2s;">
+                <i class="card-icon fa-solid fa-crown"></i>
+                <h3>VIP PRIVATE ZONE</h3>
+                <ul class="spec-list fa-ul">
+                    <li><i class="fa-li fa-solid fa-desktop"></i> Монитор: <span>ASUS 540Hz</span></li>
+                    <li><i class="fa-li fa-solid fa-microchip"></i> GPU: <span>RTX 4070 Ti 12GB</span></li>
+                    <li><i class="fa-li fa-solid fa-brain"></i> CPU: <span>Core i7-14700KF</span></li>
+                    <li><i class="fa-li fa-solid fa-memory"></i> RAM: <span>32GB DDR5</span></li>
+                </ul>
+            </div>
+
+            <div class="spec-card fade-in-section" style="transition-delay: 0.4s;">
+                <i class="card-icon fa-solid fa-users-rays"></i>
+                <h3>MAIN HALL BATTLE</h3>
+                <ul class="spec-list fa-ul">
+                    <li><i class="fa-li fa-solid fa-desktop"></i> Монитор: <span>Zowie 360Hz</span></li>
+                    <li><i class="fa-li fa-solid fa-microchip"></i> GPU: <span>RTX 4070 Super</span></li>
+                    <li><i class="fa-li fa-solid fa-brain"></i> CPU: <span>Core i5-14600KF</span></li>
+                    <li><i class="fa-li fa-solid fa-memory"></i> RAM: <span>32GB DDR4</span></li>
+                </ul>
+            </div>
+
+             <div class="spec-card fade-in-section" style="transition-delay: 0.6s;">
+                <i class="card-icon fa-solid fa-headset"></i>
+                <h3>PRO GEAR</h3>
+                <ul class="spec-list fa-ul">
+                    <li><i class="fa-li fa-solid fa-mouse"></i> Мыши: <span>Logitech / Zowie</span></li>
+                    <li><i class="fa-li fa-solid fa-keyboard"></i> Клавы: <span>Dark Project</span></li>
+                    <li><i class="fa-li fa-solid fa-headphones-simple"></i> Звук: <span>HyperX Cloud</span></li>
+                    <li><i class="fa-li fa-solid fa-chair"></i> Трон: <span>Sharkoon Gaming</span></li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="calc">
+        <h2 class="fade-in-section"><i class="fa-solid fa-coins"></i> Рассчитай Бюджет</h2>
+        <div class="calc-wrapper fade-in-section">
+            <div class="input-group">
+                <label for="zoneSelect"><i class="fa-solid fa-layer-group"></i> Выберите зону высадки:</label>
+                <select id="zoneSelect" class="neon-input">
+                    <option value="1000">⚡ Общий зал (1000 ₸/час)</option>
+                    <option value="1500" selected>👑 VIP Private (1500 ₸/час)</option>
+                    <option value="1300">💀 Bootcamp Trio (1300 ₸/час)</option>
+                </select>
+                <i class="input-icon fa-solid fa-caret-down"></i>
+            </div>
+
+            <div class="input-group">
+                <label for="hoursInput"><i class="fa-solid fa-hourglass-half"></i> Время сессии (часов):</label>
+                <input type="number" id="hoursInput" class="neon-input" value="3" min="1" max="24">
+                <i class="input-icon fa-solid fa-clock"></i>
+            </div>
+
+            <div class="total-price-box">
+                <span>ИТОГО К ОПЛАТЕ:</span>
+                <span id="totalPrice">4500 ₸</span>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="cyber-btn" onclick="alert('Демо-режим: В реальной версии здесь будет переход в WhatsApp!')">
+                    <i class="fa-brands fa-whatsapp"></i> Забронировать сейчас
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacts" class="footer">
+        <h2 style="margin-bottom: 50px;"><i class="fa-solid fa-map-location-dot"></i> База Дислокации</h2>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <i class="fa-solid fa-location-arrow"></i>
+                <h4>Адрес</h4>
+                <p>Астана, ул. Кайыма Мухамедханова, 23А</p>
+            </div>
+            <div class="contact-card">
+                <i class="fa-solid fa-phone-volume"></i>
+                <h4>Связь</h4>
+                <p>+7 (702) 222-50-40</p>
+            </div>
+            <div class="contact-card">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <h4>Режим</h4>
+                <p>Круглосуточно 24/7</p>
+            </div>
+        </div>
+
+        <div class="social-links">
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="#"><i class="fa-brands fa-telegram"></i></a>
+        </div>
+
+        <p style="margin-top: 50px; color: #555; font-size: 0.9rem;">© 2025 TOP GAME Demo Concept. Created to impress.</p>
+    </section>
+
+    <script>
+        // 1. ПРЕЛОАДЕР
+        window.addEventListener('load', () => {
+            const preloader = document.querySelector('.preloader');
+            preloader.classList.add('hidden');
+            // Запускаем анимацию частиц после загрузки
+            initParticles();
+        });
+
+        // 2. АНИМАЦИЯ ПРИ СКРОЛЛЕ (Intersection Observer API)
+        const scrollElements = document.querySelectorAll('.fade-in-section');
+
+        const elementInView = (el, dividend = 1) => {
+            const elementTop = el.getBoundingClientRect().top;
+            return (elementTop <= (window.innerHeight || document.documentElement.clientHeight) / dividend);
+        };
+
+        const displayScrollElement = (element) => {
+            element.classList.add('is-visible');
+        };
+
+        const handleScrollAnimation = () => {
+            scrollElements.forEach((el) => {
+                if (elementInView(el, 1.25)) {
+                    displayScrollElement(el);
+                }
+            })
+        }
+
+        window.addEventListener('scroll', () => { 
+            handleScrollAnimation();
+        });
+        // Запустить один раз при загрузке, если элементы уже видны
+        handleScrollAnimation();
+
+
+        // 3. КАЛЬКУЛЯТОР ЦЕНЫ (С анимацией "удара")
+        const zoneSelect = document.getElementById('zoneSelect');
+        const hoursInput = document.getElementById('hoursInput');
+        const totalPriceElement = document.getElementById('totalPrice');
+
+        function calculatePrice() {
+            let price = parseInt(zoneSelect.value) * parseInt(hoursInput.value);
+            if (isNaN(price) || price < 0) price = 0;
+            
+            totalPriceElement.textContent = price + " ₸";
+            
+            // Добавляем класс для анимации "удара" при изменении цены
+            totalPriceElement.classList.remove('bump');
+            void totalPriceElement.offsetWidth; // Триггер reflow для перезапуска анимации
+            totalPriceElement.classList.add('bump');
+        }
+
+        zoneSelect.addEventListener('change', calculatePrice);
+        hoursInput.addEventListener('input', calculatePrice);
+
+
+        // 4. АНИМАЦИЯ ЧАСТИЦ НА ХОЛСТЕ (HERO BACKGROUND)
+        // Простая реализация без внешних библиотек
+        function initParticles() {
+            const canvas = document.getElementById('particles-js');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let particlesArray;
+
+            // Класс частицы
+            class Particle {
+                constructor(x, y, directionX, directionY, size, color) {
+                    this.x = x; this.y = y;
+                    this.directionX = directionX; this.directionY = directionY;
+                    this.size = size; this.color = color;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+                update() {
+                    if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                    if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+                    this.x += this.directionX;
+                    this.y += this.directionY;
+                    this.draw();
+                }
+            }
+
+            // Создание частиц
+            function init() {
+                particlesArray = [];
+                let numberOfParticles = (canvas.height * canvas.width) / 9000;
+                for (let i = 0; i < numberOfParticles; i++) {
+                    let size = (Math.random() * 2) + 1;
+                    let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                    let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                    let directionX = (Math.random() * 0.4) - 0.2;
+                    let directionY = (Math.random() * 0.4) - 0.2;
+                    let color = '#00ffd5'; // Цвет частиц
+                    particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+                }
+            }
+
+            // Анимация цикла
+            function animate() {
+                requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, innerWidth, innerHeight);
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                }
+                connect();
+            }
+
+            // Рисование линий между частицами
+            function connect() {
+                let opacityValue = 1;
+                for (let a = 0; a < particlesArray.length; a++) {
+                    for (let b = a; b < particlesArray.length; b++) {
+                        let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
+                            + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                        if (distance < (canvas.width/7) * (canvas.height/7)) {
+                            opacityValue = 1 - (distance / 20000);
+                            ctx.strokeStyle = 'rgba(0, 255, 213,' + opacityValue + ')';
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            init();
+            animate();
+            
+            // Ресайз окна
+            window.addEventListener('resize', () => {
+                canvas.width = innerWidth;
+                canvas.height = innerHeight;
+                init();
+            });
+        }
+    </script>
+</body>
+</html>
